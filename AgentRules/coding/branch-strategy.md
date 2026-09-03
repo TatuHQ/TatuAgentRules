@@ -17,3 +17,4 @@ When developing a feature or carrying out a ticket:
 - Resolve conflicts locally before requesting review.
 - Open a pull request targeting `develop` (or `main` if `develop` is absent) when the work is completed.
 - Merge through the pull request after review and required checks pass.
+- Delete local and remote feature/hotfix branches promptly after the pull request is merged.
