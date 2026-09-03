@@ -1,0 +1,70 @@
+name: Sync agent rules
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "AgentRules/**"
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        repo:
+          - TucanoTechnology/TucanoTestAPI
+          - TucanoTechnology/TucanoTestGUI
+    steps:
+      - name: Check required secret
+        run: |
+          if [ -z "${{ secrets.SYNC_PAT }}" ]; then
+            echo "::error::SYNC_PAT secret is not set. See README.md."
+            exit 1
+          fi
+
+      - name: Checkout source of truth
+        uses: actions/checkout@v4
+        with:
+          path: source
+
+      - name: Checkout consumer repository
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ matrix.repo }}
+          token: ${{ secrets.SYNC_PAT }}
+          path: consumer
+
+      - name: Copy AgentRules and open a pull request
+        env:
+          GH_TOKEN: ${{ secrets.SYNC_PAT }}
+        run: |
+          set -euo pipefail
+          cd consumer
+          git config user.name "tucano-agent-rules-bot"
+          git config user.email "actions@users.noreply.github.com"
+
+          rm -rf AgentRules
+          cp -r ../source/AgentRules ./AgentRules
+
+          if git diff --quiet -- AgentRules; then
+            echo "No changes to sync for ${{ matrix.repo }}."
+            exit 0
+          fi
+
+          branch="chore/sync-agent-rules-${{ github.run_number }}"
+          git checkout -b "$branch"
+          git add AgentRules
+          git commit -m "chore: sync AgentRules from TucanoAgentRules@${{ github.sha }}"
+          git push origin "$branch"
+
+          gh pr create \
+            --repo "${{ matrix.repo }}" \
+            --base main \
+            --head "$branch" \
+            --title "chore: sync AgentRules from TucanoAgentRules" \
+            --body "Automated sync from https://github.com/TucanoTechnology/TucanoAgentRules/commit/${{ github.sha }}. Review the diff under \`AgentRules/\` before merging."
