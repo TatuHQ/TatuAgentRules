@@ -10,9 +10,12 @@ on:
 permissions:
   contents: read
 
+# Self-hosted, as in every other workflow in the organisation. GitHub-hosted
+# runners are billing-gated on this account: jobs on `ubuntu-latest` are refused
+# before their first step runs.
 jobs:
   sync:
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, Linux, X64]
     strategy:
       fail-fast: false
       matrix:
@@ -26,6 +29,16 @@ jobs:
             echo "::error::SYNC_PAT secret is not set. See README.md."
             exit 1
           fi
+
+      # Runs before any checkout or push, so a runner without gh fails loudly
+      # instead of leaving a consumer repository half-synced.
+      - name: Check runner has the gh CLI
+        run: |
+          if ! command -v gh >/dev/null 2>&1; then
+            echo "::error::The self-hosted runner has no gh CLI; this workflow needs it to open sync pull requests. Install gh on the runner, or add an install step here."
+            exit 1
+          fi
+          gh --version
 
       - name: Checkout source of truth
         uses: actions/checkout@v4
