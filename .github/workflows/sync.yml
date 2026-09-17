@@ -64,14 +64,19 @@ jobs:
           rm -rf AgentRules
           cp -r ../source/AgentRules ./AgentRules
 
-          if git diff --quiet -- AgentRules; then
+          # Regenerate the shared-rules routing table in AGENTS.md from the
+          # real AgentRules tree. Only the delimited block between marker
+          # comments is touched; repo-specific prose is preserved.
+          bash ../source/scripts/generate-shared-rules.sh .
+
+          if git diff --quiet -- AgentRules AGENTS.md; then
             echo "No changes to sync for ${{ matrix.repo }}."
             exit 0
           fi
 
           branch="chore/sync-agent-rules-${{ github.run_number }}"
           git checkout -b "$branch"
-          git add AgentRules
+          git add AgentRules AGENTS.md
           git commit -m "chore: sync AgentRules from TucanoAgentRules@${{ github.sha }}"
           git push origin "$branch"
 
@@ -80,4 +85,4 @@ jobs:
             --base main \
             --head "$branch" \
             --title "chore: sync AgentRules from TucanoAgentRules" \
-            --body "Automated sync from https://github.com/TucanoTechnology/TucanoAgentRules/commit/${{ github.sha }}. Review the diff under \`AgentRules/\` before merging."
+            --body "Automated sync from https://github.com/TucanoTechnology/TucanoAgentRules/commit/${{ github.sha }}. Review the diff under \`AgentRules/\` and the regenerated shared-rules table in \`AGENTS.md\` before merging."

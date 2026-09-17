@@ -60,7 +60,7 @@ for file in "${rule_files[@]}"; do
     continue
   fi
 
-  for key in load-when applies-to; do
+  for key in load-when applies-to title; do
     if ! grep -qE "^${key}:[[:space:]]*[^[:space:]]" <<<"$fm"; then
       fail "$file: frontmatter is missing a non-empty '${key}:' field."
     fi
@@ -171,6 +171,33 @@ awk -v min="$MIN_DUPLICATE_LINE" '
 while IFS= read -r dup; do
   [ -n "$dup" ] && fail "duplicated prose across files: $dup"
 done <"$work/duplicates"
+
+# --- shared-rules table generation -----------------------------------------
+
+# The sync workflow regenerates each consumer AGENTS.md shared-rules table from
+# the AgentRules tree using generate-shared-rules.sh. Verify the script exists,
+# is executable, and produces a valid table for the current tree.
+if [ ! -x scripts/generate-shared-rules.sh ]; then
+  fail "scripts/generate-shared-rules.sh is missing or not executable (sync workflow depends on it)."
+else
+  gen_work="$work/shared-rules-gen"
+  mkdir -p "$gen_work"
+  cp -r AgentRules "$gen_work/"
+  gen_output="$(bash scripts/generate-shared-rules.sh "$gen_work" 2>&1)"
+  gen_rc=$?
+  if [ "$gen_rc" -ne 0 ]; then
+    fail "scripts/generate-shared-rules.sh failed (exit $gen_rc): $gen_output"
+  elif [ ! -f "$gen_work/AGENTS.md" ]; then
+    fail "scripts/generate-shared-rules.sh did not produce AGENTS.md."
+  else
+    # Every AgentRules path in the generated table must resolve to a real file.
+    while IFS= read -r gen_path; do
+      if [ ! -f "$gen_work/$gen_path" ]; then
+        fail "generated shared-rules table references '$gen_path' which does not exist."
+      fi
+    done < <(grep -oE 'AgentRules/[^ `)]+\.md' "$gen_work/AGENTS.md" | sort -u)
+  fi
+fi
 
 # --- report -----------------------------------------------------------------
 
