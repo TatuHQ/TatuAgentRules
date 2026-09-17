@@ -31,6 +31,15 @@ consumer repository. The default `GITHUB_TOKEN` cannot push to other
 repositories, so this must be created and stored manually as an Actions secret
 on this repository. It is never printed or committed.
 
+## Runner requirements
+
+Workflows in this repository run on the organisation's self-hosted runner
+(`runs-on: [self-hosted, Linux, X64]`), as every other workflow in the
+organisation does — GitHub-hosted runners are billing-gated on this account and
+refuse a job before its first step runs. `sync.yml` additionally needs the `gh`
+CLI on that runner to open the sync pull requests; when `gh` is missing it stops
+with a clear error before touching any consumer repository.
+
 ## Repository-specific rules
 
 Rules that only apply to one repository (architecture, storage layout,
