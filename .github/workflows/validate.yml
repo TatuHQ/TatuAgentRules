@@ -1,0 +1,31 @@
+name: Validate rules
+
+on:
+  pull_request: {}
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+# Self-hosted, as in every other workflow in the organisation. GitHub-hosted
+# runners are billing-gated on this account: jobs on `ubuntu-latest` are refused
+# before their first step runs.
+jobs:
+  check-rules:
+    runs-on: [self-hosted, Linux, X64]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Check AgentRules
+        run: ./scripts/check-rules.sh
+
+  actionlint:
+    runs-on: [self-hosted, Linux, X64]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Lint workflows
+        run: docker run --rm -v "$PWD:/repo:ro" --workdir /repo rhysd/actionlint:1.7.12 -color
