@@ -1,8 +1,9 @@
 # Tucano Agent Rules
 
 Single source of truth for organisation-wide AI agent rules shared across
-[TucanoTestAPI](https://github.com/TucanoTechnology/TucanoTestAPI) and
-[TucanoTestGUI](https://github.com/TucanoTechnology/TucanoTestGUI).
+[TucanoTestAPI](https://github.com/TucanoTechnology/TucanoTestAPI),
+[TucanoTestGUI](https://github.com/TucanoTechnology/TucanoTestGUI) and
+[TucanoTime](https://github.com/TucanoTechnology/TucanoTime).
 
 ## How this works
 
