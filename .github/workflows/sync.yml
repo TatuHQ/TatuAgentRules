@@ -22,6 +22,7 @@ jobs:
         repo:
           - TucanoTechnology/TucanoTestAPI
           - TucanoTechnology/TucanoTestGUI
+          - TucanoTechnology/TucanoTime
     steps:
       - name: Check required secret
         run: |
