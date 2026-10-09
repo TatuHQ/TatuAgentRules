@@ -42,12 +42,12 @@ jobs:
           gh --version
 
       - name: Checkout source of truth
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           path: source
 
       - name: Checkout consumer repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           repository: ${{ matrix.repo }}
           token: ${{ secrets.SYNC_PAT }}
