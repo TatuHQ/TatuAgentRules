@@ -23,6 +23,7 @@ jobs:
           - TucanoTechnology/TucanoTestAPI
           - TucanoTechnology/TucanoTestGUI
           - TucanoTechnology/TucanoTime
+          - TucanoTechnology/TucanoTime-Website
     steps:
       - name: Check required secret
         run: |
