@@ -1,9 +1,10 @@
-# Tucano Agent Rules
+# Tatu Agent Rules
 
 Single source of truth for organisation-wide AI agent rules shared across
-[TucanoTestAPI](https://github.com/TucanoTechnology/TucanoTestAPI),
-[TucanoTestGUI](https://github.com/TucanoTechnology/TucanoTestGUI) and
-[TucanoTime](https://github.com/TucanoTechnology/TucanoTime).
+[TatuTestAPI](https://github.com/TatuHQ/TatuTestAPI),
+[TatuTestGUI](https://github.com/TatuHQ/TatuTestGUI),
+[TatuTime](https://github.com/TatuHQ/TatuTime) and
+[TatuTime-Website](https://github.com/TatuHQ/TatuTime-Website).
 
 ## How this works
 
