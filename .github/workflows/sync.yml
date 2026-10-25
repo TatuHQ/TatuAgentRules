@@ -20,9 +20,10 @@ jobs:
       fail-fast: false
       matrix:
         repo:
-          - TucanoTechnology/TucanoTestAPI
-          - TucanoTechnology/TucanoTestGUI
-          - TucanoTechnology/TucanoTime
+          - TatuHQ/TatuTestAPI
+          - TatuHQ/TatuTestGUI
+          - TatuHQ/TatuTime
+          - TatuHQ/TatuTime-Website
     steps:
       - name: Check required secret
         run: |
@@ -59,7 +60,7 @@ jobs:
         run: |
           set -euo pipefail
           cd consumer
-          git config user.name "tucano-agent-rules-bot"
+          git config user.name "tatu-agent-rules-bot"
           git config user.email "actions@users.noreply.github.com"
 
           rm -rf AgentRules
@@ -78,12 +79,12 @@ jobs:
           branch="chore/sync-agent-rules-${{ github.run_number }}"
           git checkout -b "$branch"
           git add AgentRules AGENTS.md
-          git commit -m "chore: sync AgentRules from TucanoAgentRules@${{ github.sha }}"
+          git commit -m "chore: sync AgentRules from TatuAgentRules@${{ github.sha }}"
           git push origin "$branch"
 
           gh pr create \
             --repo "${{ matrix.repo }}" \
             --base main \
             --head "$branch" \
-            --title "chore: sync AgentRules from TucanoAgentRules" \
-            --body "Automated sync from https://github.com/TucanoTechnology/TucanoAgentRules/commit/${{ github.sha }}. Review the diff under \`AgentRules/\` and the regenerated shared-rules table in \`AGENTS.md\` before merging."
+            --title "chore: sync AgentRules from TatuAgentRules" \
+            --body "Automated sync from https://github.com/TatuHQ/TatuAgentRules/commit/${{ github.sha }}. Review the diff under \`AgentRules/\` and the regenerated shared-rules table in \`AGENTS.md\` before merging."
